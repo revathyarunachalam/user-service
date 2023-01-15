@@ -59,16 +59,15 @@ const submit = (event, context, callback) => {
     });
 };
 
-const getByEmail = (event, context, callback) => {
+const getById = (event, callback) => {
 
-  const { pathParameters: { email } } = event;
+  const { pathParameters: { id } } = event;
 
   const params = {
     TableName: 'user',
-    FilterExpression: "email = :email",
-    // KeyConditionExpression: "email = :a",
+    KeyConditionExpression: "id = :a",
     ExpressionAttributeValues: {
-        ":email": email,
+        ":id": id,
     }
   };
  
@@ -92,5 +91,5 @@ const getByEmail = (event, context, callback) => {
 
 module.exports = {
   submit,
-  getByEmail
+  getById
 }

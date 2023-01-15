@@ -24,13 +24,13 @@ functions:
       - http: 
           path: user
           method: post
-  getUserByEmail:
-    handler: api/user.getByEmail
+  getUserById:
+    handler: api/user.getById
     memorySize: 128
-    description: get user by email
+    description: get user by Id
     events:
       - http: 
-          path: user/{email}
+          path: user/{id}
           method: get 
 
 resources:
