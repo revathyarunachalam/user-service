@@ -8,12 +8,11 @@ AWS.config.setPromisesDependency(require('bluebird'));
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
  
 
-const userInfo = (fullname, email) => {
+const userInfo = (user) => {
   const timestamp = new Date().getTime();
   return {
     id: uuid.v1(),
-    fullname: fullname,
-    email: email,
+    ...user,
     submittedAt: timestamp,
     updatedAt: timestamp,
   };
@@ -30,18 +29,16 @@ const submitUser = user => {
 };
 
 
+/* 
+TODO:
+1. Request Payload validation
+2. Enable Authorization
+3. Enable cors policy
+*/
 const submit = (event, context, callback) => {
   const requestBody = JSON.parse(event.body);
-  const fullname = requestBody.fullname;
-  const email = requestBody.email;
  
-  if (typeof fullname !== 'string' || typeof email !== 'string') {
-    console.error('Validation Failed');
-    callback(new Error('Couldn\'t submit user because of validation errors.'));
-    return;
-  }
- 
-  submitUser(userInfo(fullname, email))
+  submitUser(userInfo(requestBody))
     .then(res => {
       callback(null, {
         statusCode: 200,
