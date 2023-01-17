@@ -3,8 +3,6 @@
 const uuid = require('uuid');
 const AWS = require('aws-sdk'); 
  
-AWS.config.setPromisesDependency(require('bluebird'));
- 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
  
 
@@ -35,61 +33,89 @@ TODO:
 2. Enable Authorization
 3. Enable cors policy
 */
-const submit = (event, context, callback) => {
+const submit = (event) => {
   const requestBody = JSON.parse(event.body);
  
   submitUser(userInfo(requestBody))
     .then(res => {
-      callback(null, {
+      return {
         statusCode: 200,
         body: JSON.stringify({
           message: `Sucessfully submitted user with email ${email}`,
           userId: res.id
         })
-      });
+      }
     })
     .catch(err => {
       console.log(err);
-      callback(null, {
+      return {
         statusCode: 500,
         body: JSON.stringify({
           message: `Unable to submit user with email ${email}`
         })
-      })
+      }
     });
 };
 
-const getById = (event, callback) => {
+const getById = (event) => {
 
   const { pathParameters: { id } } = event;
 
   const params = {
     TableName: 'user',
-    KeyConditionExpression: "id = :a",
-    ExpressionAttributeValues: {
-        ":id": id,
-    }
+    Key: {
+      id: id,
+    },
   };
- 
-  dynamoDb.scan(params).promise()
+  
+  return dynamoDb.get(params).promise()
     .then(result => {
-      console.log('result', result);
       const response = {
         statusCode: 200,
-        body: JSON.stringify(result.Items),
+        body: JSON.stringify(result.Item),
       };
-      console.log('response', response);
-      callback(null, response);
+      return response;
     })
     .catch(error => {
       console.error(error);
-      callback(new Error('Couldn\'t fetch candidate.'));
-      return;
+      return new Error('Couldn\'t fetch candidate.')
     });
 
 };
 
+const updateUser = (event) => {
+  const { pathParameters: { id } } = event;
+  const requestBody = JSON.parse(event.body);
+  const timestamp = new Date().getTime();
+
+  
+  return submitUser({
+    id: id,
+    ...requestBody,
+    updatedAt: timestamp,
+  })
+    .then(res => {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: `Sucessfully updated`,
+          userId: res.id
+        })
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          message: `Unable to udpate ${err}`
+        })
+      }
+    });
+}
+
 module.exports = {
   submit,
-  getById
+  getById,
+  updateUser
 }

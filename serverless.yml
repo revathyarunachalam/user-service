@@ -32,6 +32,16 @@ functions:
       - http: 
           path: user/{id}
           method: get 
+          cors: true
+  updateUserById:
+    handler: api/user.updateUser
+    memorySize: 128
+    description: update user by Id
+    events:
+      - http: 
+          path: user/{id}
+          method: put 
+          cors: true
 
 resources:
   Resources:
