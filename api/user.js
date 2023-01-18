@@ -43,7 +43,11 @@ const submit = (event) => {
         body: JSON.stringify({
           message: `Sucessfully submitted user with email ${email}`,
           userId: res.id
-        })
+        }),
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Credentials": true,
+        },
       }
     })
     .catch(err => {
@@ -73,6 +77,10 @@ const getById = (event) => {
       const response = {
         statusCode: 200,
         body: JSON.stringify(result.Item),
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Credentials": true,
+        },
       };
       return response;
     })
@@ -100,7 +108,11 @@ const updateUser = (event) => {
         body: JSON.stringify({
           message: `Sucessfully updated`,
           userId: res.id
-        })
+        }),
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Credentials": true,
+        },
       }
     })
     .catch(err => {
